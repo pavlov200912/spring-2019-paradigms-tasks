@@ -56,6 +56,10 @@ class ASTNodeVisitor(metaclass=abc.ABCMeta):
     def visit_function_call(self, acceptor):
         pass
 
+    @abc.abstractmethod
+    def visit_function(self, acceptor):
+        pass
+
 
 class ASTNode(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -121,7 +125,7 @@ class Function(ASTNode):
         return self
 
     def accept(self, visitor):
-        pass
+        return visitor.visit_function(self)
 
 
 class FunctionDefinition(ASTNode):
@@ -234,7 +238,7 @@ class Read(ASTNode):
         return Number(value)
 
     def accept(self, visitor):
-        return visitor.visit_fuction_read(self)
+        return visitor.visit_read(self)
 
 
 class FunctionCall(ASTNode):
@@ -382,3 +386,4 @@ class UnaryOperation(ASTNode):
 
     def accept(self, visitor):
         return visitor.visit_unary_operation(self)
+
