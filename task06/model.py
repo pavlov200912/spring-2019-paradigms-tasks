@@ -98,7 +98,7 @@ class Number(ASTNode):
         return self.value
 
     def accept(self, visitor):
-        pass
+        visitor.visit_number(self)
 
 
 class Function(ASTNode):
@@ -382,3 +382,4 @@ class UnaryOperation(ASTNode):
 
     def accept(self, visitor):
         visitor.visit_unary_operation(self)
+
