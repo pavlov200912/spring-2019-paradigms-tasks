@@ -62,7 +62,8 @@ class PrettyPrinter(ASTNodeVisitor):
 
     def visit_binary_operation(self, binary_operation):
         self.deep_counter += 1
-        result = '(' + binary_operation.lhs.accept(self) + ' ' + binary_operation.op + ' ' \
+        result = '(' + binary_operation.lhs.accept(self) + ' ' +\
+                 binary_operation.op + ' ' \
                  + binary_operation.rhs.accept(self) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
@@ -71,7 +72,8 @@ class PrettyPrinter(ASTNodeVisitor):
 
     def visit_unary_operation(self, unary_operation):
         self.deep_counter += 1
-        result = '(' + unary_operation.op + unary_operation.expr.accept(self) + ')'
+        result = '(' + unary_operation.op + \
+                 unary_operation.expr.accept(self) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
             return result
@@ -93,6 +95,3 @@ class PrettyPrinter(ASTNodeVisitor):
 def pretty_print(program):
     result = program.accept(PrettyPrinter())
     print(result)
-
-
-pretty_print()

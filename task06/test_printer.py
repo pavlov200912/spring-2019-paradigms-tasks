@@ -77,7 +77,7 @@ def test_fuction_defenition():
                  ]
                  )
     ).accept(PrettyPrinter()) == 'def foo(arg1, arg2) {\n    ' \
-                                 'if (42) {\n        12;\n        27;\n    } ' \
+                                 'if (42) {\n        12;\n        27;\n    } '\
                                  'else {\n        ' \
                                  'if (42) {\n            12;\n' \
                                  '            27;\n        }\n    }\n}'
