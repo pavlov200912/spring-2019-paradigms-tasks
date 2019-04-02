@@ -9,84 +9,84 @@ class PrettyPrinter(ASTNodeVisitor):
     def calc_tabs(self):
         return self.enclosure_counter * '    '
 
-    def visit_conditional(self, acceptor):
+    def visit_conditional(self, conditional):
         result = self.calc_tabs() + 'if ('
         self.deep_counter += 1
-        result += acceptor.condition.accept(self)
+        result += conditional.condition.accept(self)
         self.deep_counter -= 1
         result += ') {\n'
         self.enclosure_counter += 1
-        for expr in acceptor.if_true or []:
+        for expr in conditional.if_true or []:
             result += expr.accept(self) + '\n'
         self.enclosure_counter -= 1
         result += self.calc_tabs() + '}'
-        if acceptor.if_false:
+        if conditional.if_false:
             result += ' else {\n'
             self.enclosure_counter += 1
-            for expr in acceptor.if_false:
+            for expr in conditional.if_false:
                 result += expr.accept(self) + '\n'
             self.enclosure_counter -= 1
             result += self.calc_tabs() + '}'
         return result
 
-    def visit_function_definition(self, acceptor):
-        result = self.calc_tabs() + 'def ' + acceptor.name + '('
-        result += ', '.join(acceptor.function.args)
+    def visit_function_definition(self, function_definition):
+        result = self.calc_tabs() + 'def ' + function_definition.name + '('
+        result += ', '.join(function_definition.function.args)
         result += ') {\n'
         self.enclosure_counter += 1
-        for expr in acceptor.function.body:
+        for expr in function_definition.function.body:
             result += expr.accept(self) + '\n'
         self.enclosure_counter -= 1
         result += self.calc_tabs() + '}'
         return result
 
-    def visit_print(self, acceptor):
+    def visit_print(self, print_object):
         self.deep_counter += 1
-        result = self.calc_tabs() + 'print ' + acceptor.expr.accept(self)
+        result = self.calc_tabs() + 'print ' + print_object.expr.accept(self)
         self.deep_counter -= 1
         return result + ';'
 
-    def visit_read(self, acceptor):
-        return self.calc_tabs() + 'read ' + acceptor.name + ';'
+    def visit_read(self, read):
+        return self.calc_tabs() + 'read ' + read.name + ';'
 
-    def visit_number(self, acceptor):
-        result = str(acceptor.value)
+    def visit_number(self, number):
+        result = str(number.value)
         if self.deep_counter:
             return result
         return self.enclosure_counter * '    ' + result + ';'
 
-    def visit_reference(self, acceptor):
+    def visit_reference(self, reference):
         if self.deep_counter:
-            return acceptor.name
-        return self.calc_tabs() + acceptor.name + ';'
+            return reference.name
+        return self.calc_tabs() + reference.name + ';'
 
-    def visit_binary_operation(self, acceptor):
+    def visit_binary_operation(self, binary_operation):
         self.deep_counter += 1
-        result = '(' + acceptor.lhs.accept(self) + ' ' + acceptor.op + ' '\
-                 + acceptor.rhs.accept(self) + ')'
+        result = '(' + binary_operation.lhs.accept(self) + ' ' + binary_operation.op + ' ' \
+                 + binary_operation.rhs.accept(self) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
             return result
         return result + ';'
 
-    def visit_unary_operation(self, acceptor):
+    def visit_unary_operation(self, unary_operation):
         self.deep_counter += 1
-        result = '(' + acceptor.op + acceptor.expr.accept(self) + ')'
+        result = '(' + unary_operation.op + unary_operation.expr.accept(self) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
             return result
         return result + ';'
 
-    def visit_function_call(self, acceptor):
+    def visit_function_call(self, function_call):
         self.deep_counter += 1
-        result = acceptor.fun_expr.accept(self) + '('
-        result += ', '.join([x.accept(self) for x in acceptor.args]) + ')'
+        result = function_call.fun_expr.accept(self) + '('
+        result += ', '.join([x.accept(self) for x in function_call.args]) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
             return result
         return self.calc_tabs() + result + ';'
 
-    def visit_function(self, acceptor):
+    def visit_function(self, function):
         pass
 
 
