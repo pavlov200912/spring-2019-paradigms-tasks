@@ -168,7 +168,7 @@ def test_end_to_end(capsys):
     assert not err
     assert out == 'def main(arg1) {\n    read x;\n    print x;\n  ' \
                   '  if ((2 == 3)) {\n        if (1) {\n        }\n    }' \
-                  ' else {\n        exit((-arg1));\n    }\n}'
+                  ' else {\n        exit((-arg1));\n    }\n}\n'
 
 
 if __name__ == "__main__":
