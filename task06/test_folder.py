@@ -12,28 +12,28 @@ def test_number_and_number():
         Number(222), '/', Number(2))) == Number(111)
 
 
- def test_zero_multiply_reference():
+def test_zero_multiply_reference():
     assert fold_constants(BinaryOperation(
         Number(0), '*', Reference('x'))) == Number(0)
 
 
- def test_reference_multiply_zero():
+def test_reference_multiply_zero():
     assert fold_constants(BinaryOperation(
         Reference('x'), '*', Number(0))) == Number(0)
 
 
- def test_reference_substract_reference():
+def test_reference_substract_reference():
     assert fold_constants(BinaryOperation(
         Reference('x'), '-', Reference('x'))) == Number(0)
 
 
- def test_unary_operation_and_number():
+def test_unary_operation_and_number():
     assert fold_constants(UnaryOperation('!', Number(0))) == Number(1)
     assert fold_constants(UnaryOperation('!', Number(1))) == Number(0)
     assert fold_constants(UnaryOperation('-', Number(7))) == Number(-7)
 
 
- def test_end_to_end():
+def test_end_to_end():
     assert fold_constants(
         BinaryOperation(
             Number(10),
