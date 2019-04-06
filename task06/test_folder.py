@@ -1,7 +1,8 @@
 import pytest
 from folder import *
 
-def test_number_and_number():
+
+def test_num]ber_and_number():
     assert fold_constants(BinaryOperation(
         Number(21), '+', Number(10))) == Number(31)
     assert fold_constants(BinaryOperation(

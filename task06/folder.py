@@ -1,5 +1,6 @@
 from model import *
 
+
 class ConstantFolder(ASTNodeVisitor):
     def visit_conditional(self, conditional):
         new_condition = conditional.condition.accept(self)
@@ -33,10 +34,10 @@ class ConstantFolder(ASTNodeVisitor):
         if isinstance(new_lhs, Number) and isinstance(new_rhs, Number):
             return BinaryOperation(new_lhs, binary_operation.op,
                                    new_rhs).evaluate(Scope())
-        if (isinstance(new_lhs, Number) and new_lhs == Number(0)and
+        if (isinstance(new_lhs, Number) and new_lhs == Number(0) and
                 isinstance(new_rhs, Reference) and binary_operation.op == '*'):
             return Number(0)
-        if (isinstance(new_rhs, Number) and  new_rhs == Number(0) and
+        if (isinstance(new_rhs, Number) and new_rhs == Number(0) and
                 isinstance(new_lhs, Reference) and binary_operation.op == '*'):
             return Number(0)
         if (isinstance(new_lhs, Reference) and isinstance(new_rhs, Reference)
@@ -65,5 +66,3 @@ class ConstantFolder(ASTNodeVisitor):
 
 def fold_constants(program):
     return program.accept(ConstantFolder())
-
-
