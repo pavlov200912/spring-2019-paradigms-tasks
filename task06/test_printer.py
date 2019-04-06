@@ -106,7 +106,7 @@ def test_function_call_hard():
         ]).accept(PrettyPrinter()) == 'foo(foo(1, 2, 3), 2, 3);'
 
 
-def test_binary_opeartion():
+def test_binary_operation():
     assert BinaryOperation(
         Number(1),
         '*',
@@ -159,7 +159,6 @@ def test_end_to_end(capsys):
     out, err = capsys.readouterr()
     assert not err
     assert out == textwrap.dedent(test_command)
-
 
 if __name__ == "__main__":
     pytest.main()
