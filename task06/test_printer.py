@@ -45,7 +45,7 @@ def test_conditional_true_and_false():
                                       '        27;\n    }\n}'
 
 
-def test_fuction_defenition():
+def test_function_definition():
     """
     def foo(arg1, arg2) {
         if (42) {
