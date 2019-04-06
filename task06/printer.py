@@ -1,67 +1,66 @@
 from model import *
+import textwrap
 
 
 class PrettyPrinter(ASTNodeVisitor):
-    def __init__(self):
-        self.enclosure_counter = 0
-        self.deep_counter = 0
+    TAB = '    '
 
-    def calc_tabs(self):
-        return self.enclosure_counter * '    '
+    def __init__(self):
+        self.deep_counter = 0
 
     def visit_number(self, number):
         result = str(number.value)
         if self.deep_counter:
             return result
-        return self.calc_tabs() + result + ';'
+        return result + ';'
 
     def visit_function(self, function):
         pass
 
     def visit_function_definition(self, function_definition):
-        result = self.calc_tabs() + 'def ' + function_definition.name + '('
+        result = 'def ' + function_definition.name + '('
         result += ', '.join(function_definition.function.args)
         result += ') {\n'
-        self.enclosure_counter += 1
+        body_result = ''
         for expr in function_definition.function.body:
-            result += expr.accept(self) + '\n'
-        self.enclosure_counter -= 1
-        result += self.calc_tabs() + '}'
+            body_result += expr.accept(self) + '\n'
+        result += textwrap.indent(body_result, PrettyPrinter.TAB)
+        result += '}'
         return result
 
     def visit_conditional(self, conditional):
-        result = self.calc_tabs() + 'if ('
+        result = 'if ('
         self.deep_counter += 1
         result += conditional.condition.accept(self)
         self.deep_counter -= 1
         result += ') {\n'
-        self.enclosure_counter += 1
+        if_true_result = ''
         for expr in conditional.if_true or []:
-            result += expr.accept(self) + '\n'
-        self.enclosure_counter -= 1
-        result += self.calc_tabs() + '}'
+            if_true_result += expr.accept(self) + '\n'
+        result += textwrap.indent(if_true_result, PrettyPrinter.TAB)
+        result += '}'
         if conditional.if_false:
             result += ' else {\n'
-            self.enclosure_counter += 1
+            if_false_result = ''
             for expr in conditional.if_false:
-                result += expr.accept(self) + '\n'
-            self.enclosure_counter -= 1
-            result += self.calc_tabs() + '}'
+                if_false_result += expr.accept(self) + '\n'
+            result += textwrap.indent(if_false_result, PrettyPrinter.TAB)
+            result += '}'
         return result
 
     def visit_print(self, print_object):
         self.deep_counter += 1
-        result = self.calc_tabs() + 'print ' + print_object.expr.accept(self)
+        result = 'print ' + print_object.expr.accept(self)
         self.deep_counter -= 1
         return result + ';'
 
     def visit_read(self, read):
-        return self.calc_tabs() + 'read ' + read.name + ';'
+        return 'read ' + read.name + ';'
 
     def visit_reference(self, reference):
         if self.deep_counter:
             return reference.name
-        return self.calc_tabs() + reference.name + ';'
+        return reference.name + ';'
 
     def visit_function_call(self, function_call):
         self.deep_counter += 1
@@ -70,7 +69,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.deep_counter -= 1
         if self.deep_counter:
             return result
-        return self.calc_tabs() + result + ';'
+        return result + ';'
 
     def visit_binary_operation(self, binary_operation):
         self.deep_counter += 1
@@ -80,7 +79,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.deep_counter -= 1
         if self.deep_counter:
             return result
-        return self.calc_tabs() + result + ';'
+        return result + ';'
 
     def visit_unary_operation(self, unary_operation):
         self.deep_counter += 1
@@ -89,7 +88,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.deep_counter -= 1
         if self.deep_counter:
             return result
-        return self.calc_tabs() + result + ';'
+        return result + ';'
 
 
 def pretty_print(program):
