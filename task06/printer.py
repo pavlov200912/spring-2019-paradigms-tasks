@@ -3,16 +3,16 @@ import textwrap
 
 
 class PrettyPrinter(ASTNodeVisitor):
-    TAB = '    '
+    INDENT = '    '
 
     def __init__(self):
         self.deep_counter = 0
 
-    def visit_block(self, statements_list):
+    def visit_block(self, block):
         result = ''
-        for expr in statements_list or []:
+        for expr in block or []:
             result += expr.accept(self) + '\n'
-        return textwrap.indent(result, self.TAB)
+        return textwrap.indent(result, self.INDENT)
 
     def visit_number(self, number):
         result = str(number.value)
@@ -62,7 +62,7 @@ class PrettyPrinter(ASTNodeVisitor):
     def visit_function_call(self, function_call):
         self.deep_counter += 1
         result = function_call.fun_expr.accept(self) + '('
-        result += ', '.join([x.accept(self) for x in function_call.args]) + ')'
+        result += ', '.join(x.accept(self) for x in function_call.args) + ')'
         self.deep_counter -= 1
         if self.deep_counter:
             return result
