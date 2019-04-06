@@ -126,11 +126,11 @@ def test_binary_expression_as_command():
     assert Conditional(
         Number(42),
         [
-           BinaryOperation(
-               BinaryOperation(Number(2), '+', Number(2)),
-               '==',
-               Number(2)
-           )
+            BinaryOperation(
+                BinaryOperation(Number(2), '+', Number(2)),
+                '==',
+                Number(2)
+            )
         ],
         []
     ).accept(PrettyPrinter()) == textwrap.dedent(test_command)
@@ -156,7 +156,6 @@ def test_unary_expression_as_command():
         [UnaryOperation('-', Number(2))],
         []
     ).accept(PrettyPrinter()) == textwrap.dedent(test_command)
-
 
 
 def test_end_to_end(capsys):
@@ -190,6 +189,7 @@ def test_end_to_end(capsys):
     out, err = capsys.readouterr()
     assert not err
     assert out == textwrap.dedent(test_command)
+
 
 if __name__ == "__main__":
     pytest.main()
