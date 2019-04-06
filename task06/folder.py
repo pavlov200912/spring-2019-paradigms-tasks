@@ -1,71 +1,67 @@
 from model import *
 
-
 class ConstantFolder(ASTNodeVisitor):
     def visit_conditional(self, conditional):
-        conditional.condition = conditional.condition.accept(self)
-        conditional.if_true = \
-            [expr.accept(self) for expr in conditional.if_true]
-        conditional.if_false = \
-            [expr.accept(self) for expr in conditional.if_false]
-        return conditional
+        new_condition = conditional.condition.accept(self)
+        new_if_true = [expr.accept(self) for expr in conditional.if_true]
+        new_if_false = [expr.accept(self) for expr in conditional.if_false]
+        return Conditional(new_condition, new_if_true, new_if_false)
 
     def visit_function_definition(self, function_definition):
-        function_definition.function = \
+        return FunctionDefinition(
+            function_definition.name,
             function_definition.function.accept(self)
-        return function_definition
+        )
 
     def visit_print(self, print_object):
-        print_object.expr = print_object.expr.accept(self)
-        return print_object
+        return Print(print_object.expr.accept(self))
 
     def visit_read(self, read):
-        read.expr = read.expr.accept(self)
-        return read
+        return Read(read.name)
 
     def visit_number(self, number):
-        return number
+        return Number(number.value)
 
     def visit_reference(self, reference):
-        return reference
+        return Reference(reference.name)
 
     def visit_binary_operation(self, binary_operation):
-        binary_operation.lhs = binary_operation.lhs.accept(self)
-        binary_operation.rhs = binary_operation.rhs.accept(self)
-        if isinstance(binary_operation.lhs, Number) and \
-                isinstance(binary_operation.rhs, Number):
-            return binary_operation.evaluate(Scope())
-        if isinstance(binary_operation.lhs, Reference) and \
-                isinstance(binary_operation.rhs, Number) and \
-                binary_operation.rhs == Number(0):
+        new_lhs = binary_operation.lhs.accept(self)
+        new_rhs = binary_operation.rhs.accept(self)
+        if isinstance(new_lhs, Number) and isinstance(new_rhs, Number):
+            return BinaryOperation(new_lhs, binary_operation.op,
+                                   new_rhs).evaluate(Scope())
+        if (isinstance(new_lhs, Number) and new_lhs == Number(0)and
+                isinstance(new_rhs, Reference) and binary_operation.op == '*'):
             return Number(0)
-        if isinstance(binary_operation.rhs, Reference) and \
-                isinstance(binary_operation.lhs, Number) and \
-                binary_operation.lhs == Number(0):
+        if (isinstance(new_rhs, Number) and  new_rhs == Number(0) and
+                isinstance(new_lhs, Reference) and binary_operation.op == '*'):
             return Number(0)
-        if isinstance(binary_operation.lhs, Reference) and \
-                isinstance(binary_operation.rhs, Reference) and \
-                binary_operation.rhs.name == binary_operation.lhs.name and \
-                binary_operation.op == '-':
+        if (isinstance(new_lhs, Reference) and isinstance(new_rhs, Reference)
+                and new_lhs.name == new_rhs.name):
             return Number(0)
-        return binary_operation
+        return BinaryOperation(new_lhs, binary_operation.op, new_rhs)
 
     def visit_unary_operation(self, unary_operation):
-        unary_operation.expr = unary_operation.expr.accept(self)
-        if isinstance(unary_operation.expr, Number):
-            return unary_operation.evaluate(Scope())
-        return unary_operation
+        new_expr = unary_operation.expr.accept(self)
+        if isinstance(new_expr, Number):
+            return UnaryOperation(
+                unary_operation.op, new_expr
+            ).evaluate(Scope())
+        return UnaryOperation(unary_operation.op, new_expr)
 
     def visit_function_call(self, function_call):
-        function_call.fun_expr = function_call.fun_expr.accept(self)
-        function_call.args = [expr.accept(self) for expr in function_call.args]
-        return function_call
+        new_fun_expr = function_call.fun_expr.accept(self)
+        new_args = [expr.accept(self) for expr in function_call.args]
+        return FunctionCall(new_fun_expr, new_args)
 
     def visit_function(self, function):
-        function.args = [expr.accept(self) for expr in function.args]
-        function.body = [expr.accept(self) for expr in function.body]
-        return function
+        new_args = function.args.copy()
+        new_body = [expr.accept(self) for expr in function.body]
+        return Function(new_args, new_body)
 
 
 def fold_constants(program):
     return program.accept(ConstantFolder())
+
+
