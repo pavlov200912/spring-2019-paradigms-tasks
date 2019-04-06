@@ -21,11 +21,19 @@ class Scope:
 
 class ASTNodeVisitor(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def visit_conditional(self, conditional):
+    def visit_number(self, number):
+        pass
+
+    @abc.abstractmethod
+    def visit_function(self, function):
         pass
 
     @abc.abstractmethod
     def visit_function_definition(self, function_definition):
+        pass
+
+    @abc.abstractmethod
+    def visit_conditional(self, conditional):
         pass
 
     @abc.abstractmethod
@@ -37,7 +45,7 @@ class ASTNodeVisitor(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def visit_number(self, number):
+    def visit_function_call(self, function_call):
         pass
 
     @abc.abstractmethod
@@ -50,14 +58,6 @@ class ASTNodeVisitor(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def visit_unary_operation(self, unary_operation):
-        pass
-
-    @abc.abstractmethod
-    def visit_function_call(self, function_call):
-        pass
-
-    @abc.abstractmethod
-    def visit_function(self, function):
         pass
 
 
