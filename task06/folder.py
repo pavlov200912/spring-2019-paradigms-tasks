@@ -3,8 +3,10 @@ from model import *
 class ConstantFolder(ASTNodeVisitor):
     def visit_conditional(self, conditional):
         new_condition = conditional.condition.accept(self)
-        new_if_true = [expr.accept(self) for expr in conditional.if_true]
-        new_if_false = [expr.accept(self) for expr in conditional.if_false]
+        new_if_true = [expr.accept(self)
+                       for expr in conditional.if_true or []]
+        new_if_false = [expr.accept(self)
+                        for expr in conditional.if_false or []]
         return Conditional(new_condition, new_if_true, new_if_false)
 
     def visit_function_definition(self, function_definition):
