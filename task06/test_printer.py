@@ -8,21 +8,21 @@ def test_number():
 
 
 def test_conditional_true():
-    test_command = """\
+    test_command = '''\
     if (42) {
         12;
         27;
-    }"""
+    }'''
     assert Conditional(
         Number(42),
         [
             Number(12), Number(27)
         ],
-        []).accept(PrettyPrinter()) == (textwrap.dedent(test_command))
+        []).accept(PrettyPrinter()) == textwrap.dedent(test_command)
 
 
 def test_conditional_true_and_false():
-    test_command = """\
+    test_command = '''\
     if (42) {
         12;
         27;
@@ -31,7 +31,7 @@ def test_conditional_true_and_false():
             12;
             27;
         }
-    }"""
+    }'''
     assert Conditional(
         Number(42),
         [
@@ -43,7 +43,7 @@ def test_conditional_true_and_false():
 
 
 def test_function_definition():
-    test_command = """\
+    test_command = '''\
     def foo(arg1, arg2) {
         if (42) {
             12;
@@ -54,9 +54,9 @@ def test_function_definition():
                 27;
             }
         }
-    }"""
+    }'''
     assert FunctionDefinition(
-        "foo",
+        'foo',
         Function(['arg1', 'arg2'],
                  [
                      Conditional(
@@ -119,10 +119,10 @@ def test_binary_operation():
 
 
 def test_binary_expression_as_command():
-    test_command = """\
+    test_command = '''\
     if (42) {
         ((2 + 2) == 2);
-    }"""
+    }'''
     assert Conditional(
         Number(42),
         [
@@ -147,10 +147,10 @@ def test_unary_operation():
 
 
 def test_unary_expression_as_command():
-    test_command = """\
+    test_command = '''\
     if (42) {
         (-2);
-    }"""
+    }'''
     assert Conditional(
         Number(42),
         [UnaryOperation('-', Number(2))],
@@ -159,7 +159,7 @@ def test_unary_expression_as_command():
 
 
 def test_end_to_end(capsys):
-    test_command = """\
+    test_command = '''\
     def main(arg1) {
         read x;
         print x;
@@ -170,7 +170,7 @@ def test_end_to_end(capsys):
             exit((-arg1));
         }
     }
-    """
+    '''
     pretty_print(FunctionDefinition('main', Function(['arg1'], [
         Read('x'),
         Print(Reference('x')),
@@ -191,5 +191,5 @@ def test_end_to_end(capsys):
     assert out == textwrap.dedent(test_command)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     pytest.main()
