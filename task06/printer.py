@@ -80,7 +80,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.deep_counter -= 1
         if self.deep_counter:
             return result
-        return result + ';'
+        return self.calc_tabs() + result + ';'
 
     def visit_unary_operation(self, unary_operation):
         self.deep_counter += 1
@@ -89,7 +89,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.deep_counter -= 1
         if self.deep_counter:
             return result
-        return result + ';'
+        return self.calc_tabs() + result + ';'
 
 
 def pretty_print(program):
