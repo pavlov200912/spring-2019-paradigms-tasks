@@ -118,6 +118,24 @@ def test_binary_operation():
     ).accept(PrettyPrinter()) == '(1 * (2 + 3));'
 
 
+def test_binary_expression_as_command():
+    test_command = """\
+    if (42) {
+        (2 + 2) == 2;
+    }"""
+    assert Conditional(
+        Number(42),
+        [
+           BinaryOperation(
+               BinaryOperation(Number(2), '+', Number(2)),
+               '==',
+               Number(2)
+           )
+        ],
+        []
+    ).accept(PrettyPrinter()) == textwrap.dedent(test_command)
+
+
 def test_unary_operation():
     assert UnaryOperation('-',
                           UnaryOperation('-',
