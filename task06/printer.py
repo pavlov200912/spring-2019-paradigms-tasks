@@ -53,7 +53,7 @@ class PrettyPrinter(ASTNodeVisitor):
         result = str(number.value)
         if self.deep_counter:
             return result
-        return self.enclosure_counter * '    ' + result + ';'
+        return self.calc_tabs() + result + ';'
 
     def visit_reference(self, reference):
         if self.deep_counter:
@@ -62,9 +62,9 @@ class PrettyPrinter(ASTNodeVisitor):
 
     def visit_binary_operation(self, binary_operation):
         self.deep_counter += 1
-        result = '(' + binary_operation.lhs.accept(self) + ' ' +\
-                 binary_operation.op + ' ' \
-                 + binary_operation.rhs.accept(self) + ')'
+        result = ('(' + binary_operation.lhs.accept(self) + ' ' +
+                  binary_operation.op + ' '
+                  + binary_operation.rhs.accept(self) + ')')
         self.deep_counter -= 1
         if self.deep_counter:
             return result
