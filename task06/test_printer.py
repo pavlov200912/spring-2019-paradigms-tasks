@@ -1,5 +1,6 @@
 import pytest
 from printer import *
+import textwrap
 
 
 def test_number():
@@ -7,22 +8,21 @@ def test_number():
 
 
 def test_conditional_true():
-    """
+    test_command = """\
     if (42) {
         12;
         27;
-    }
-    """
+    }"""
     assert Conditional(
         Number(42),
         [
             Number(12), Number(27)
         ],
-        []).accept(PrettyPrinter()) == 'if (42) {\n    12;\n    27;\n}'
+        []).accept(PrettyPrinter()) == (textwrap.dedent(test_command))
 
 
 def test_conditional_true_and_false():
-    """
+    test_command = """\
     if (42) {
         12;
         27;
@@ -31,8 +31,7 @@ def test_conditional_true_and_false():
             12;
             27;
         }
-    }
-    """
+    }"""
     assert Conditional(
         Number(42),
         [
@@ -40,13 +39,11 @@ def test_conditional_true_and_false():
         ],
         [
             Conditional(Number(42), [Number(12), Number(27)], [])
-        ]).accept(PrettyPrinter()) == 'if (42) {\n    12;\n    27;\n} ' \
-                                      'else {\n    if (42) {\n        12;\n' \
-                                      '        27;\n    }\n}'
+        ]).accept(PrettyPrinter()) == textwrap.dedent(test_command)
 
 
 def test_function_definition():
-    """
+    test_command = """\
     def foo(arg1, arg2) {
         if (42) {
             12;
@@ -57,8 +54,7 @@ def test_function_definition():
                 27;
             }
         }
-    }
-    """
+    }"""
     assert FunctionDefinition(
         "foo",
         Function(['arg1', 'arg2'],
@@ -76,11 +72,7 @@ def test_function_definition():
                          ])
                  ]
                  )
-    ).accept(PrettyPrinter()) == 'def foo(arg1, arg2) {\n    ' \
-                                 'if (42) {\n        12;\n        27;\n    } '\
-                                 'else {\n        ' \
-                                 'if (42) {\n            12;\n' \
-                                 '            27;\n        }\n    }\n}'
+    ).accept(PrettyPrinter()) == textwrap.dedent(test_command)
 
 
 def test_print():
@@ -137,7 +129,7 @@ def test_unary_operation():
 
 
 def test_end_to_end(capsys):
-    """
+    test_command = """\
     def main(arg1) {
         read x;
         print x;
@@ -166,9 +158,7 @@ def test_end_to_end(capsys):
     ])))
     out, err = capsys.readouterr()
     assert not err
-    assert out == 'def main(arg1) {\n    read x;\n    print x;\n  ' \
-                  '  if ((2 == 3)) {\n        if (1) {\n        }\n    }' \
-                  ' else {\n        exit((-arg1));\n    }\n}\n'
+    assert out == textwrap.dedent(test_command)
 
 
 if __name__ == "__main__":
