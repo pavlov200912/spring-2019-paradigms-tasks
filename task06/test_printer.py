@@ -121,7 +121,7 @@ def test_binary_operation():
 def test_binary_expression_as_command():
     test_command = """\
     if (42) {
-        (2 + 2) == 2;
+        ((2 + 2) == 2);
     }"""
     assert Conditional(
         Number(42),
@@ -144,6 +144,19 @@ def test_unary_operation():
                                                         )
                                          )
                           ).accept(PrettyPrinter()) == '(-(-(!42)));'
+
+
+def test_unary_expression_as_command():
+    test_command = """\
+    if (42) {
+        (-2);
+    }"""
+    assert Conditional(
+        Number(42),
+        [UnaryOperation('-', Number(2))],
+        []
+    ).accept(PrettyPrinter()) == textwrap.dedent(test_command)
+
 
 
 def test_end_to_end(capsys):
