@@ -8,6 +8,12 @@ class PrettyPrinter(ASTNodeVisitor):
     def __init__(self):
         self.deep_counter = 0
 
+    def visit_block(self, statements_list):
+        result = ''
+        for expr in statements_list or []:
+            result += expr.accept(self) + '\n'
+        return textwrap.indent(result, self.TAB)
+
     def visit_number(self, number):
         result = str(number.value)
         if self.deep_counter:
@@ -21,10 +27,7 @@ class PrettyPrinter(ASTNodeVisitor):
         result = 'def ' + function_definition.name + '('
         result += ', '.join(function_definition.function.args)
         result += ') {\n'
-        body_result = ''
-        for expr in function_definition.function.body:
-            body_result += expr.accept(self) + '\n'
-        result += textwrap.indent(body_result, PrettyPrinter.TAB)
+        result += self.visit_block(function_definition.function.body)
         result += '}'
         return result
 
@@ -34,17 +37,11 @@ class PrettyPrinter(ASTNodeVisitor):
         result += conditional.condition.accept(self)
         self.deep_counter -= 1
         result += ') {\n'
-        if_true_result = ''
-        for expr in conditional.if_true or []:
-            if_true_result += expr.accept(self) + '\n'
-        result += textwrap.indent(if_true_result, PrettyPrinter.TAB)
+        result += self.visit_block(conditional.if_true)
         result += '}'
         if conditional.if_false:
             result += ' else {\n'
-            if_false_result = ''
-            for expr in conditional.if_false:
-                if_false_result += expr.accept(self) + '\n'
-            result += textwrap.indent(if_false_result, PrettyPrinter.TAB)
+            result += self.visit_block(conditional.if_false)
             result += '}'
         return result
 
