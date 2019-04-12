@@ -41,7 +41,8 @@ class ConstantFolder(ASTNodeVisitor):
                 isinstance(new_lhs, Reference) and binary_operation.op == '*'):
             return Number(0)
         if (isinstance(new_lhs, Reference) and isinstance(new_rhs, Reference)
-                and new_lhs.name == new_rhs.name):
+                and new_lhs.name == new_rhs.name
+                and binary_operation.op == '-'):
             return Number(0)
         return BinaryOperation(new_lhs, binary_operation.op, new_rhs)
 
