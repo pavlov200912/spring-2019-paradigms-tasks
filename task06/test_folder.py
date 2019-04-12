@@ -2,7 +2,7 @@ import pytest
 from folder import *
 
 
-def test_num]ber_and_number():
+def test_number_and_number():
     assert fold_constants(BinaryOperation(
         Number(21), '+', Number(10))) == Number(31)
     assert fold_constants(BinaryOperation(
@@ -26,6 +26,16 @@ def test_reference_multiply_zero():
 def test_reference_substract_reference():
     assert fold_constants(BinaryOperation(
         Reference('x'), '-', Reference('x'))) == Number(0)
+
+
+def test_reference_plus_reference():
+    result = fold_constants(BinaryOperation(
+        Reference('x'), '+', Reference('x')))
+    assert isinstance(result, BinaryOperation)
+    assert isinstance(result.lhs, Reference)
+    assert isinstance(result.rhs, Reference)
+    assert result.lhs.name == result.rhs.name == 'x'
+    assert result.op == '+'
 
 
 def test_unary_operation_and_number():
