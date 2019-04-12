@@ -7,19 +7,24 @@ class ExpressionPrinter(ASTNodeVisitor):
         return str(number.value)
 
     def visit_function(self, function):
-        pass
+        raise TypeError("ExpressionPrinter can visit only expressions, but "
+                        "called from Function")
 
     def visit_function_definition(self, function_definition):
-        pass
+        raise TypeError("ExpressionPrinter can visit only expressions, but "
+                        "called from Function Definition")
 
     def visit_conditional(self, conditional):
-        pass
+        raise TypeError("ExpressionPrinter can visit only expressions, but "
+                        "called from Conditional")
 
     def visit_print(self, print_object):
-        pass
+        raise TypeError("ExpressionPrinter can visit only expressions, but "
+                        "called from Print")
 
     def visit_read(self, read):
-        pass
+        raise TypeError("ExpressionPrinter can visit only expressions, but "
+                        "called from Read")
 
     def visit_function_call(self, function_call):
         result = function_call.fun_expr.accept(self) + '('
@@ -58,7 +63,7 @@ class PrettyPrinter(ASTNodeVisitor):
         return self.visit_expression(number) + ';'
 
     def visit_function(self, function):
-        pass
+        raise TypeError("PrettyPrinter can't visit Function")
 
     def visit_function_definition(self, function_definition):
         result = 'def ' + function_definition.name + '('
