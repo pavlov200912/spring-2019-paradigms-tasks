@@ -4,7 +4,7 @@ import textwrap
 
 
 def test_number():
-    assert (Number(1).accept(PrettyPrinter(ExpressionPrinter()))) == '1;'
+    assert Number(1).accept(PrettyPrinter(ExpressionPrinter())) == '1;'
 
 
 def test_conditional_true():
@@ -47,6 +47,19 @@ def test_conditional_true_and_false():
 
 
 def test_function_definition():
+    test_command = '''\
+    def foo(arg1, arg2) {
+    }'''
+    assert FunctionDefinition(
+        'foo',
+        Function(['arg1', 'arg2'],
+                 [])
+    ).accept(
+        PrettyPrinter(ExpressionPrinter())
+    ) == textwrap.dedent(test_command)
+
+
+def test_function_definition_and_conditional():
     test_command = '''\
     def foo(arg1, arg2) {
         if (42) {
@@ -132,20 +145,17 @@ def test_binary_operation():
     ).accept(PrettyPrinter(ExpressionPrinter())) == '(1 * (2 + 3));'
 
 
-def test_binary_expression_as_command():
+def test_binary_expression_and_conditional():
     test_command = '''\
-    if (42) {
-        ((2 + 2) == 2);
+    if (((2 + 2) == 2)) {
     }'''
     assert Conditional(
-        Number(42),
-        [
-            BinaryOperation(
-                BinaryOperation(Number(2), '+', Number(2)),
-                '==',
-                Number(2)
-            )
-        ],
+        BinaryOperation(
+            BinaryOperation(Number(2), '+', Number(2)),
+            '==',
+            Number(2)
+        ),
+        [],
         []
     ).accept(
         PrettyPrinter(ExpressionPrinter())
@@ -164,14 +174,13 @@ def test_unary_operation():
     ) == '(-(-(!42)));'
 
 
-def test_unary_expression_as_command():
+def test_unary_expression_and_conditional():
     test_command = '''\
-    if (42) {
-        (-2);
+    if ((-2)) {
     }'''
     assert Conditional(
-        Number(42),
-        [UnaryOperation('-', Number(2))],
+        UnaryOperation('-', Number(2)),
+        [],
         []
     ).accept(
         PrettyPrinter(ExpressionPrinter())
