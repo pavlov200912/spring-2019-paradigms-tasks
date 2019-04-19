@@ -187,7 +187,8 @@ fn find_solution_parallel(f: Field) -> Option<Field> {
     rx.into_iter().find_map(|x| x)
 }
 
-const SPAWN_DEPTH: usize = 1;
+const SPAWN_DEPTH: usize = 2; // Так время работы увеличилось на medium в 1.5 раза
+                              // Сильно.
 
 fn spawn_tasks(spawn_depth: usize, pool: &ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
     assert!(spawn_depth > 0);
