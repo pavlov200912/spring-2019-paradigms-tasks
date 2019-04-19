@@ -10,8 +10,6 @@ mod field;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
-use threadpool::ThreadPool;
-use std::sync::mpsc::Receiver;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -172,15 +170,29 @@ fn find_solution(f: &mut Field) -> Option<Field> {
 fn find_solution_parallel(mut f: Field) -> Option<Field> {
     // TODO: вам требуется изменить эту функцию.
     use std::sync::mpsc;
+    use threadpool::ThreadPool;
     let (tx, rx) = mpsc::channel();
 
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
 
-    pool.execute(move|| {
-       tx.send(find_solution(&mut f)).expect("SendError");
+    try_extend_field(& mut f, |field| {
+        match tx.send(Some(field.clone())) {
+            Ok(_) => (),
+            Err(_e) => (),
+        }
+        Some(field.clone()) // Почему он хочет .clone() ??
+    }, |field| {
+        let tx = tx.clone();
+        let mut field_copy = field.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
+        pool.execute(move||{
+            match tx.send(find_solution(& mut field_copy)) {
+                Ok(_) => (),
+                Err(_e) => (),
+            }
+        });
+        None
     });
-
     rx.into_iter().find_map(|x| x)
 }
 
