@@ -11,6 +11,7 @@ mod field;
 use field::Cell::*;
 use field::{parse_field, Field, N};
 use threadpool::ThreadPool;
+use std::sync::mpsc::Receiver;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -180,10 +181,7 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
        tx.send(find_solution(&mut f)).expect("SendError");
     });
 
-    match rx.recv() {
-        Ok(ans) => ans,
-        Err(e) => panic!("SendError: {}", e)
-    }
+    rx.into_iter().find_map(|x| x)
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
