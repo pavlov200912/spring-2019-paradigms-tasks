@@ -169,7 +169,18 @@ fn find_solution(f: &mut Field) -> Option<Field> {
 /// в противном случае возвращает `None`.
 fn find_solution_parallel(mut f: Field) -> Option<Field> {
     // TODO: вам требуется изменить эту функцию.
-    find_solution(&mut f)
+    use std::sync::mpsc;
+    let (tx, rx) = mpsc::channel();
+
+    match tx.send(find_solution(&mut f)) {
+        Ok(_) => (),
+        Err(e) => panic!("SendError: {}", e)
+    }
+
+    match rx.recv() {
+        Ok(ans) => ans,
+        Err(e) => panic!("SendError: {}", e)
+    }
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
