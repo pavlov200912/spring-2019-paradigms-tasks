@@ -10,6 +10,8 @@ mod field;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
+use threadpool::ThreadPool;
+use std::sync::mpsc::Sender;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -175,7 +177,12 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
 
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
+    spawn_tasks(pool, tx, f);
+    rx.into_iter().find_map(|x| x)
 
+}
+
+fn spawn_tasks(pool: ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
     try_extend_field(& mut f, |field| {
         tx.send(Some(field.clone())).unwrap_or(());
         Some(field.clone()) // Почему он хочет .clone() ??
@@ -188,8 +195,7 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
         None
     });
     std::mem::drop(tx); // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
-                           // Могу только закостылять, чтобы они паниковали
-    rx.into_iter().find_map(|x| x)
+    // Могу только закостылять, чтобы они паниковали
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
