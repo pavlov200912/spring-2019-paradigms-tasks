@@ -10,6 +10,7 @@ mod field;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
+use threadpool::ThreadPool;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -172,7 +173,10 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
     use std::sync::mpsc;
     let (tx, rx) = mpsc::channel();
 
-    match tx.send(find_solution(&mut f)) {
+    let n_workers = 8;
+    let pool = ThreadPool::new(n_workers);
+
+    match tx.send(find_solution(&mut f)) { // Очень хочется написать ?, но я не смог, как смочь?
         Ok(_) => (),
         Err(e) => panic!("SendError: {}", e)
     }
