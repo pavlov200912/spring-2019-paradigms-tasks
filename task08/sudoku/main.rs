@@ -176,10 +176,9 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
 
-    match tx.send(find_solution(&mut f)) { // Очень хочется написать ?, но я не смог, как смочь?
-        Ok(_) => (),
-        Err(e) => panic!("SendError: {}", e)
-    }
+    pool.execute(move|| {
+       tx.send(find_solution(&mut f)).expect("SendError");
+    });
 
     match rx.recv() {
         Ok(ans) => ans,
