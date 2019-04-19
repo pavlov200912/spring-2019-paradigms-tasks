@@ -177,22 +177,18 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
     let pool = ThreadPool::new(n_workers);
 
     try_extend_field(& mut f, |field| {
-        match tx.send(Some(field.clone())) {
-            Ok(_) => (),
-            Err(_e) => (),
-        }
+        tx.send(Some(field.clone())).unwrap_or(());
         Some(field.clone()) // Почему он хочет .clone() ??
     }, |field| {
         let tx = tx.clone();
         let mut field_copy = field.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
         pool.execute(move||{
-            match tx.send(find_solution(& mut field_copy)) {
-                Ok(_) => (),
-                Err(_e) => (),
-            }
+            tx.send(find_solution(& mut field_copy)).unwrap_or(());
         });
         None
     });
+    std::mem::drop(tx); // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
+                           // Могу только закостылять, чтобы они паниковали
     rx.into_iter().find_map(|x| x)
 }
 
