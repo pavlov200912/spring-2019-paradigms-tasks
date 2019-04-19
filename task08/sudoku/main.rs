@@ -169,7 +169,7 @@ fn find_solution(f: &mut Field) -> Option<Field> {
 /// Перебирает все возможные решения головоломки, заданной параметром `f`, в несколько потоков.
 /// Если хотя бы одно решение `s` существует, возвращает `Some(s)`,
 /// в противном случае возвращает `None`.
-fn find_solution_parallel(mut f: Field) -> Option<Field> {
+fn find_solution_parallel(f: Field) -> Option<Field> {
     // TODO: вам требуется изменить эту функцию.
     use std::sync::mpsc;
     use threadpool::ThreadPool;
@@ -177,20 +177,22 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
 
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
-    spawn_tasks(pool, tx, f);
+    spawn_tasks(pool, tx, f); // Мда, тут Rust мне любезно посоветовал убрать mut у f
+                                    // Которая входной параметр find_solution_parallel
+                                    // И без нее действительно все работает, mut не нужны...
     rx.into_iter().find_map(|x| x)
 
 }
 
 fn spawn_tasks(pool: ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
-    try_extend_field(& mut f, |field| {
-        tx.send(Some(field.clone())).unwrap_or(());
-        Some(field.clone()) // Почему он хочет .clone() ??
-    }, |field| {
+    try_extend_field(& mut f, |f| {
+        tx.send(Some(f.clone())).unwrap_or(());
+        Some(f.clone()) // Почему он хочет .clone() ??
+    }, |f| {
         let tx = tx.clone();
-        let mut field_copy = field.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
+        let mut f = f.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
         pool.execute(move||{
-            tx.send(find_solution(& mut field_copy)).unwrap_or(());
+            tx.send(find_solution(& mut f)).unwrap_or(());
         });
         None
     });
