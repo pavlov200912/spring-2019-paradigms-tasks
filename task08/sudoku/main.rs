@@ -180,27 +180,39 @@ fn find_solution_parallel(f: Field) -> Option<Field> {
 
     let n_workers = 8;
     let pool = ThreadPool::new(n_workers);
-    spawn_tasks(pool, tx, f); // Мда, тут Rust мне любезно посоветовал убрать mut у f
-                                    // Которая входной параметр find_solution_parallel
-                                    // И без нее действительно все работает, mut не нужны...
+    spawn_tasks(SPAWN_DEPTH, &pool, tx, f);
+    // Мда, тут Rust мне любезно посоветовал убрать mut у f
+    // Которая входной параметр find_solution_parallel
+    // И без нее действительно все работает, mut не нужны...
     rx.into_iter().find_map(|x| x)
-
 }
 
-fn spawn_tasks(pool: ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
-    try_extend_field(& mut f, |f| {
-        tx.send(Some(f.clone())).unwrap_or(());
-        Some(f.clone()) // Почему он хочет .clone() ??
-    }, |f| {
-        let tx = tx.clone();
-        let mut f = f.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
-        pool.execute(move||{
-            tx.send(find_solution(& mut f)).unwrap_or(());
+const SPAWN_DEPTH: usize = 1;
+
+fn spawn_tasks(spawn_depth: usize, pool: &ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
+    assert!(spawn_depth > 0);
+    if spawn_depth == 1 {
+        try_extend_field(&mut f, |f| {
+            tx.send(Some(f.clone())).unwrap_or(());
+            Some(f.clone()) // Почему он хочет .clone() ??
+        }, |f| {
+            let tx = tx.clone();
+            let mut f = f.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
+            pool.execute(move || {
+                tx.send(find_solution(&mut f)).unwrap_or(());
+            });
+            None
         });
-        None
-    });
-    std::mem::drop(tx); // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
-    // Могу только закостылять, чтобы они паниковали
+        std::mem::drop(tx);  // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
+                                // Могу только закостылять, чтобы они паниковали
+    } else {
+        try_extend_field(&mut f, |f| f.clone(), |f| {
+            let f = f.clone();
+            let tx = tx.clone();
+            spawn_tasks(spawn_depth - 1, &pool, tx,  f);
+            None
+        });
+    }
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
