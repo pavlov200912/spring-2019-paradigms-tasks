@@ -13,8 +13,8 @@ mod field;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
-use threadpool::ThreadPool;
 use std::sync::mpsc::Sender;
+use threadpool::ThreadPool;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
 /// Она перебирает значение какой-нибудь пустой клетки на поле всеми непротиворечивыми способами.
@@ -193,26 +193,34 @@ const SPAWN_DEPTH: usize = 2; // Так время работы увеличил
 fn spawn_tasks(spawn_depth: usize, pool: &ThreadPool, tx: Sender<Option<Field>>, mut f: Field) {
     assert!(spawn_depth > 0);
     if spawn_depth == 1 {
-        try_extend_field(&mut f, |f| {
-            tx.send(Some(f.clone())).unwrap_or(());
-            Some(f.clone()) // Почему он хочет .clone() ??
-        }, |f| {
-            let tx = tx.clone();
-            let mut f = f.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
-            pool.execute(move || {
-                tx.send(find_solution(&mut f)).unwrap_or(());
-            });
-            None
-        });
-        std::mem::drop(tx);  // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
-                                // Могу только закостылять, чтобы они паниковали
+        try_extend_field(
+            &mut f,
+            |f| {
+                tx.send(Some(f.clone())).unwrap_or(());
+                Some(f.clone()) // Почему он хочет .clone() ??
+            },
+            |f| {
+                let tx = tx.clone();
+                let mut f = f.clone(); // Почему нужен clone? Почему нельзя пробросить ту же &mut
+                pool.execute(move || {
+                    tx.send(find_solution(&mut f)).unwrap_or(());
+                });
+                None
+            },
+        );
+        std::mem::drop(tx); // Какой-то кек, убивать потоки нельзя, а что тогда мне делать?
+                            // Могу только закостылять, чтобы они паниковали
     } else {
-        try_extend_field(&mut f, |f| f.clone(), |f| {
-            let f = f.clone();
-            let tx = tx.clone();
-            spawn_tasks(spawn_depth - 1, &pool, tx,  f);
-            None
-        });
+        try_extend_field(
+            &mut f,
+            |f| f.clone(),
+            |f| {
+                let f = f.clone();
+                let tx = tx.clone();
+                spawn_tasks(spawn_depth - 1, &pool, tx, f);
+                None
+            },
+        );
     }
 }
 
