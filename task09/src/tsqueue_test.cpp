@@ -47,7 +47,7 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
             int data_snapshot = data;
             threadsafe_queue_push(qs, &data);
             int *ponger_answer_ptr =
-                static_cast<int*>(threadsafe_queue_wait_and_pop(qs + 1));
+                static_cast<int *>(threadsafe_queue_wait_and_pop(qs + 1));
             REQUIRE(ponger_answer_ptr == &data);
             REQUIRE(*ponger_answer_ptr == data_snapshot + 1);
         }
@@ -58,7 +58,7 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
         ThreadsafeQueue *qs = static_cast<ThreadsafeQueue *>(_qs);
         for (int i = 0; i < PING_PONGS; i++) {
             int *pinger_data_ptr =
-                 static_cast<int*>(threadsafe_queue_wait_and_pop(qs));
+                 static_cast<int *>(threadsafe_queue_wait_and_pop(qs));
             (*pinger_data_ptr)++;  // НЕ атомарна
             threadsafe_queue_push(qs + 1, pinger_data_ptr);
         }
@@ -89,7 +89,7 @@ void *consumer(void *_q) {
         REQUIRE(threadsafe_queue_wait_and_pop(q) == nullptr);
     }
     return nullptr;
-};
+}
 
 TEST_CASE("ThreadsafeQueue pushes from multiple threads") {
     ThreadsafeQueue q;
