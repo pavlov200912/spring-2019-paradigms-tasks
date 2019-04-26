@@ -13,18 +13,13 @@ TEST_CASE("ThreadsafeQueue works like Queue in a single thread") {
 
     threadsafe_queue_push(&q, &a);
     threadsafe_queue_push(&q, &b);
-            CHECK(threadsafe_queue_wait_and_pop(&q) == &a);
-            CHECK(threadsafe_queue_wait_and_pop(&q) == &b);
+    CHECK(threadsafe_queue_wait_and_pop(&q) == &a);
+    CHECK(threadsafe_queue_wait_and_pop(&q) == &b);
 
     threadsafe_queue_push(&q, &c);
     threadsafe_queue_push(&q, &b);
-<<<<<<< HEAD
     CHECK(threadsafe_queue_wait_and_pop(&q) == &c);
     CHECK(threadsafe_queue_wait_and_pop(&q) == &b);
-=======
-            CHECK(threadsafe_queue_wait_and_pop(&q) == &c);
-            CHECK(threadsafe_queue_wait_and_pop(&q) == &b);
->>>>>>> 20135f2... ping-pong test implemented
 
     threadsafe_queue_destroy(&q);
 }
@@ -51,7 +46,8 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
         for (int i = 0; i < PING_PONGS; i++) {
             int data_snapshot = data;
             threadsafe_queue_push(qs, &data);
-            int* ponger_answer_ptr = static_cast<int*>(threadsafe_queue_wait_and_pop(qs + 1));
+            int *ponger_answer_ptr =
+                static_cast<int*>(threadsafe_queue_wait_and_pop(qs + 1));
             REQUIRE(ponger_answer_ptr == &data);
             REQUIRE(*ponger_answer_ptr == data_snapshot + 1);
         }
@@ -61,8 +57,9 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
     auto ponger = [](void *_qs) -> void * {
         ThreadsafeQueue *qs = static_cast<ThreadsafeQueue *>(_qs);
         for (int i = 0; i < PING_PONGS; i++) {
-            int* pinger_data_ptr = static_cast<int*>(threadsafe_queue_wait_and_pop(qs));
-            (*pinger_data_ptr)++; // НЕ атомарна
+            int *pinger_data_ptr =
+                 static_cast<int*>(threadsafe_queue_wait_and_pop(qs));
+            (*pinger_data_ptr)++;  // НЕ атомарна
             threadsafe_queue_push(qs + 1, pinger_data_ptr);
         }
         return nullptr;
@@ -89,7 +86,7 @@ void *producer(void *_q) {
 void *consumer(void *_q) {
     ThreadsafeQueue *q = static_cast<ThreadsafeQueue *>(_q);
     for (int i = 0; i < ELEMENTS_PER_THREAD; i++) {
-                REQUIRE(threadsafe_queue_wait_and_pop(q) == nullptr);
+        REQUIRE(threadsafe_queue_wait_and_pop(q) == nullptr);
     }
     return nullptr;
 };
@@ -100,13 +97,13 @@ TEST_CASE("ThreadsafeQueue pushes from multiple threads") {
 
     for (int repeat = 0; repeat < REPEATS; repeat++) {
         pthread_t t1, t2;
-                REQUIRE(pthread_create(&t1, nullptr, producer, &q) == 0);
-                REQUIRE(pthread_create(&t2, nullptr, producer, &q) == 0);
-                REQUIRE(pthread_join(t2, nullptr) == 0);
-                REQUIRE(pthread_join(t1, nullptr) == 0);
+        REQUIRE(pthread_create(&t1, nullptr, producer, &q) == 0);
+        REQUIRE(pthread_create(&t2, nullptr, producer, &q) == 0);
+        REQUIRE(pthread_join(t2, nullptr) == 0);
+        REQUIRE(pthread_join(t1, nullptr) == 0);
 
         for (int i = 0; i < 2 * ELEMENTS_PER_THREAD; i++) {
-                    REQUIRE(threadsafe_queue_wait_and_pop(&q) == nullptr);
+            REQUIRE(threadsafe_queue_wait_and_pop(&q) == nullptr);
         }
     }
 
@@ -123,10 +120,10 @@ TEST_CASE("ThreadsafeQueue pops from multiple threads") {
         }
 
         pthread_t t1, t2;
-                REQUIRE(pthread_create(&t1, nullptr, consumer, &q) == 0);
-                REQUIRE(pthread_create(&t2, nullptr, consumer, &q) == 0);
-                REQUIRE(pthread_join(t2, nullptr) == 0);
-                REQUIRE(pthread_join(t1, nullptr) == 0);
+        REQUIRE(pthread_create(&t1, nullptr, consumer, &q) == 0);
+        REQUIRE(pthread_create(&t2, nullptr, consumer, &q) == 0);
+        REQUIRE(pthread_join(t2, nullptr) == 0);
+        REQUIRE(pthread_join(t1, nullptr) == 0);
     }
 
     threadsafe_queue_destroy(&q);
@@ -141,12 +138,12 @@ TEST_CASE("ThreadsafeQueue pushes and pops from multiple threads") {
     for (int repeat = 0; repeat < REPEATS; repeat++) {
         pthread_t prods[THREADS], cons[THREADS];
         for (int i = 0; i < THREADS; i++) {
-                    REQUIRE(pthread_create(&prods[i], nullptr, producer, &q) == 0);
-                    REQUIRE(pthread_create(&cons[i], nullptr, consumer, &q) == 0);
+            REQUIRE(pthread_create(&prods[i], nullptr, producer, &q) == 0);
+            REQUIRE(pthread_create(&cons[i], nullptr, consumer, &q) == 0);
         }
         for (int i = THREADS - 1; i >= 0; i--) {
-                    REQUIRE(pthread_join(prods[i], nullptr) == 0);
-                    REQUIRE(pthread_join(cons[i], nullptr) == 0);
+            REQUIRE(pthread_join(prods[i], nullptr) == 0);
+            REQUIRE(pthread_join(cons[i], nullptr) == 0);
         }
     }
 
