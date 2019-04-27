@@ -46,7 +46,7 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
         for (int i = 0; i < PING_PONGS; i++) {
             int data_snapshot = data;
             threadsafe_queue_push(&qs[0], &data);
-            REQUIRE(static_cast<int *>(threadsafe_queue_wait_and_pop(&qs[1])) ==
+            REQUIRE(threadsafe_queue_wait_and_pop(&qs[1]) ==
                     &data);
             REQUIRE(data == data_snapshot + 1);
         }
