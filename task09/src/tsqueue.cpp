@@ -1,9 +1,9 @@
 #include "tsqueue.h"
 
 void threadsafe_queue_init(ThreadsafeQueue *q) {
+    queue_init(&q->q);
     pthread_mutex_init(&q->mutex, NULL);
     pthread_cond_init(&q->cond_queue_not_empty, NULL);
-    queue_init(&q->q);
 }
 
 void threadsafe_queue_destroy(ThreadsafeQueue *q) {
