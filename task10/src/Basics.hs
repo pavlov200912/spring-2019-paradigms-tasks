@@ -28,10 +28,13 @@ drop' :: Int -> [a] -> [a]
 drop' n (x:xs) | n > 0 = drop' (n - 1) xs
                | otherwise = (x:xs)
 drop' _ [] = []
+
 -- 5. filter' возвращает список из элементов, для которых f возвращает True
 filter' :: (a -> Bool) -> [a] -> [a]
 --filter' f xs = undefined
-filter' _ _ = undefined
+filter' f (x:xs) | f x = [x] ++ filter' f xs
+                 | otherwise = filter' f xs
+filter' _ [] = []
 
 -- 6. foldl'' последовательно применяет функцию f к элементу списка l и значению,
 -- полученному на предыдущем шаге, начальное значение
