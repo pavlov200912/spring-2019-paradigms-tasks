@@ -20,11 +20,14 @@ take' :: Int -> [a] -> [a]
 take'  n (x:xs) | n > 0 = [x] ++ take' (n - 1) xs
                 | otherwise = []
 take' _ [] = []
+
 -- 4. drop' возвращает список без первых n >= 0 элементов; если n больше длины
 -- списка, то пустой список.
 drop' :: Int -> [a] -> [a]
 --drop' = undefined
-drop' _ _ = undefined
+drop' n (x:xs) | n > 0 = drop' (n - 1) xs
+               | otherwise = (x:xs)
+drop' _ [] = []
 -- 5. filter' возвращает список из элементов, для которых f возвращает True
 filter' :: (a -> Bool) -> [a] -> [a]
 --filter' f xs = undefined
