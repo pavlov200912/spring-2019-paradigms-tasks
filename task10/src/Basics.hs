@@ -26,7 +26,7 @@ take' _ [] = []
 drop' :: Int -> [a] -> [a]
 --drop' = undefined
 drop' n (x:xs) | n > 0 = drop' (n - 1) xs
-               | otherwise = (x:xs)
+               | otherwise = x:xs
 drop' _ [] = []
 
 -- 5. filter' возвращает список из элементов, для которых f возвращает True
