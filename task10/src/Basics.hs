@@ -17,7 +17,7 @@ tail' [] = []
 -- 3. take' возвращает первые n >= 0 элементов исходного списка
 take' :: Int -> [a] -> [a]
 --take' = undefined
-take'  n (x:xs) | n > 0 = [x] ++ take' (n - 1) xs
+take'  n (x:xs) | n > 0 = x : take' (n - 1) xs
                 | otherwise = []
 take' _ [] = []
 
@@ -32,7 +32,7 @@ drop' _ [] = []
 -- 5. filter' возвращает список из элементов, для которых f возвращает True
 filter' :: (a -> Bool) -> [a] -> [a]
 --filter' f xs = undefined
-filter' f (x:xs) | f x = [x] ++ filter' f xs
+filter' f (x:xs) | f x = x : filter' f xs
                  | otherwise = filter' f xs
 filter' _ [] = []
 
@@ -41,15 +41,17 @@ filter' _ [] = []
 -- foldl'' (+) 0 [1, 2, 3] == (((0 + 1) + 2) + 3)
 -- foldl'' (*) 4 [] == 4
 
---foldl'' :: (a -> b -> a) -> a -> [b] -> a
---foldl'' f z l = undefined
---fodld'' _ _ _ = undefined
---foldld'' = undefined
+foldl'' :: (a -> b -> a) -> a -> [b] -> a
+foldl'' f z (x:xs) = foldl'' f (f z x) xs
+foldl'' _ z _ = z  
+
+
 -- 7. concat' принимает на вход два списка и возвращает их конкатенацию
 -- concat' [1,2] [3] == [1,2,3]
 concat' :: [a] -> [a] -> [a]
 --concat' = undefined
 concat' _ _ = undefined
+
 -- 8. quickSort' возвращает его отсортированный список
 -- quickSort' должен быть реализован через алгоритм QuickSort
 -- (выбор pivot может быть любым)
