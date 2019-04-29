@@ -50,7 +50,8 @@ foldl'' _ z _ = z
 -- concat' [1,2] [3] == [1,2,3]
 concat' :: [a] -> [a] -> [a]
 --concat' = undefined
-concat' _ _ = undefined
+concat' (x:xs) l = x : concat' xs l
+concat' [] l = l 
 
 -- 8. quickSort' возвращает его отсортированный список
 -- quickSort' должен быть реализован через алгоритм QuickSort
