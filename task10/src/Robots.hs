@@ -65,7 +65,7 @@ damage victim amount = let
 -- Вам понадобится вспомогательная функция isAlive, которая бы проверяла, жив робот или не очень
 -- Робот считается живым, если его уровень здоровья строго больше нуля.
 isAlive :: Robot -> Bool
-isAlive = undefined
+isAlive r = getHealth r > 0
 
 -- Затем, используя функцию damage, напишите функцию, которая моделирует один раунд схватки между
 -- двумя роботами
@@ -76,7 +76,8 @@ isAlive = undefined
 -- Обратите внимание, что неживой робот не может атаковать. В этом случае нужно просто
 -- вернуть второго робота, как будто ничего и не было
 fight :: Robot -> Robot -> Robot
-fight _ _ = undefined
+fight attacker defender | isAlive attacker = damage defender $ getAttack attacker
+                        | otherwise = defender
 
 -- Наконец, напишите функцию, которая бы моделировала три раунда схватки между
 -- двумя роботами и возвращала бы победителя. Схватка происходит следующим образом:
@@ -88,23 +89,29 @@ fight _ _ = undefined
 -- Если же так вышло, что после трех раундов у обоих роботов одинаковый уровень жизни, то
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
 threeRoundFight :: Robot -> Robot -> Robot
-threeRoundFight _ _ = undefined
+threeRoundFight attacker defender = let defender' = fight attacker defender
+                                        attacker' = fight defender' attacker
+                                        defender'' = fight attacker' defender'
+                                    in if getHealth defender'' > getHealth attacker'
+                                       then defender''
+                                       else attacker'
 
 -- Шаг 4.
 -- Создайте список из трех роботов(Абсолютно любых, но лучше живых, мы собираемся их побить)
 roboter :: [Robot]
-roboter = undefined
+roboter = [robot "Optimus Prime" 10 10, robot "Bumblebee" 8 8, robot "MegaTron" 15 15]
 
 -- Затем создайте четвертого
 neueRobot :: Robot
-neueRobot = undefined
+neueRobot = robot "Barinov Vadim" 100 100
 
 -- Используя частичное применение напишите функцию, которая бы принимала на вход робота
 -- и атаковала бы его роботом neueRobot
-neueRobotAttak :: Robot -> Robot
-neueRobotAttak = undefined
+neueRobotAttack :: Robot -> Robot
+neueRobotAttack defender = fight neueRobot defender
 
 -- Наконец, используя filter определите, кто из роботов, которых вы положили в список roboter,
 -- выживет, если neueRobot сразится с ним в одном раунде.
 survivors :: [Robot]
-survivors = undefined
+survivors = filter isAlive $ map neueRobotAttack roboter
+
