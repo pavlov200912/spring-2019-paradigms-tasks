@@ -115,3 +115,7 @@ neueRobotAttack defender = fight neueRobot defender
 survivors :: [Robot]
 survivors = filter isAlive $ map neueRobotAttack roboter
 
+-- Мне не нравится, что у меня нет обощенной функции для процесса массовой схватки с neue, добавляем
+
+fightWithNeue :: Robot -> [Robot] -> [Robot]
+fightWithNeue neue robots = filter isAlive $ map (fight neue) robots
