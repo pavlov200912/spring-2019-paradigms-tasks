@@ -35,13 +35,13 @@ getHealth (_, _, myHealth) = myHealth
 -- состояние робота
 
 setName :: Name -> Robot -> Robot
-setName = undefined
+setName name r = (name, getAttack r, getHealth r)
 
 setAttack :: Attack -> Robot -> Robot
-setAttack = undefined
+setAttack attack r = (getName r, attack, getHealth r)
 
 setHealth :: Health -> Robot -> Robot
-setHealth = undefined
+setHealth health r = (getName r, getAttack r, health)
 
 -- Шаг 2.
 -- Напишите функцию, которая ведет себя как __str__
@@ -51,7 +51,7 @@ setHealth = undefined
 -- > "Marvin, attack: 100, health: 500"
 
 printRobot :: Robot -> String
-printRobot = undefined
+printRobot r = concat [getName r, ", attack: ", show $ getAttack r, ", health: ", show $ getHealth r]
 
 -- Давайте теперь научим роботов драться друг с другом
 -- Напишем функцию damage которая причиняет роботу урон
@@ -76,7 +76,7 @@ isAlive = undefined
 -- Обратите внимание, что неживой робот не может атаковать. В этом случае нужно просто
 -- вернуть второго робота, как будто ничего и не было
 fight :: Robot -> Robot -> Robot
-fight attacker defender = undefined
+fight _ _ = undefined
 
 -- Наконец, напишите функцию, которая бы моделировала три раунда схватки между
 -- двумя роботами и возвращала бы победителя. Схватка происходит следующим образом:
@@ -88,7 +88,7 @@ fight attacker defender = undefined
 -- Если же так вышло, что после трех раундов у обоих роботов одинаковый уровень жизни, то
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
 threeRoundFight :: Robot -> Robot -> Robot
-threeRoundFight attacker defender = undefined
+threeRoundFight _ _ = undefined
 
 -- Шаг 4.
 -- Создайте список из трех роботов(Абсолютно любых, но лучше живых, мы собираемся их побить)
