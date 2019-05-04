@@ -49,7 +49,7 @@ testsRobots =
         , testCase "Test threeRoundFight attacker wins" $
             threeRoundFight optimus mega @?= robot "Optimus Prime" 10 5  -- It was a great battle.
         , testCase "Test threeRoundFight defender wins" $
-            threeRoundFight bee fat @?= robot ("Fat Guy") 5 (1000 - 2 * 8)
+            threeRoundFight bee fat @?= robot "Fat Guy" 5 (1000 - 2 * 8)
         , testCase "Test survivors is empty" $
             survivors @?= []  -- No one can escape from Barinov Vadim
         , testCase "Test fightWithNeue" $
