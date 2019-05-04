@@ -54,5 +54,5 @@ concat' [] l = l
 -- quickSort' должен быть реализован через алгоритм QuickSort
 -- (выбор pivot может быть любым)
 quickSort' :: Ord a => [a] -> [a]
-quickSort' (x:xs) = concat' (quickSort' (filter' (<=x) (xs))) (x:quickSort' (filter' (>x) (xs))) 
+quickSort' (x:xs) = concat' (quickSort' (filter' (<=x) xs)) (x:quickSort' (filter' (>x) xs))
 quickSort' [] = []
