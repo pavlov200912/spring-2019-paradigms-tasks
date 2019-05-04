@@ -108,7 +108,7 @@ neueRobot = robot "Barinov Vadim" 100 100
 -- Используя частичное применение напишите функцию, которая бы принимала на вход робота
 -- и атаковала бы его роботом neueRobot
 neueRobotAttack :: Robot -> Robot
-neueRobotAttack defender = fight neueRobot defender
+neueRobotAttack = fight neueRobot
 
 -- Наконец, используя filter определите, кто из роботов, которых вы положили в список roboter,
 -- выживет, если neueRobot сразится с ним в одном раунде.
