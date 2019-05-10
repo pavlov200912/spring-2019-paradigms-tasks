@@ -54,7 +54,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         filter' (>4) [0..10] @?= [5..10]
 
     , testCase "filter' selects only (>4) from infinite list" $
-            infEqual (filter' (>4) [0..]) [5, 6, 7, 8, 9, 10] @?= True
+        infEqual (filter' (>4) [0..]) [5, 6, 7, 8, 9, 10] @?= True
 
     , testCase "foldl'' can be used for finding sum of elements" $
         foldl'' (+) 0 [1,2,3] @?= 6
