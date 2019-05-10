@@ -6,7 +6,7 @@ import Basics
 main :: IO ()
 main = defaultMain testsBasics
 
---infEqual :: [a]->[a]->Bool
+infEqual :: (Eq a) => [a]->[a]->Bool
 infEqual a b = (take' 5 a) == (take' 5 b)
 
 testsBasics :: TestTree
@@ -65,8 +65,11 @@ testsBasics = testGroup "Unit tests for Basics tasks"
     , testCase "concat' works on finite lists as expected" $
         concat' [1,2,3] [4,5,6] @?= [1..6]
 
-    , testCase "concat' works on infinite lists as expected" $
+    , testCase "concat' works on infinite lists with 2nd arg as expected" $
         infEqual (concat' [0] [1..]) [0,1,2,3,4] @?= True
+
+    , testCase "concat' works on infinite lists with 1st arg as expected" $
+        infEqual (concat' [0..] [165,165]) [0..] @?= True
 
     , testCase "concat' works with empty lists as expected" $
         concat' [] [1,2,3,4,5,6] @?= [1..6]
@@ -76,4 +79,8 @@ testsBasics = testGroup "Unit tests for Basics tasks"
     
     , testCase "quickSort actualy sorts large list" $
         quickSort' [5,2,3,4,1,6,7,8,9,11,534,121321312231] @?= [1,2,3,4,5,6,7,8,9,11,534,121321312231]
+
+    --, testCase "quickSort works fine on empty list" $
+            --quickSort' []::[Int] @?= ([]::[Int])
+
     ]
