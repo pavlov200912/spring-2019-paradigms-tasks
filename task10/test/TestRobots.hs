@@ -21,9 +21,9 @@ testsRobots =
         , testCase "Test for printRobot" $
             printRobot walter @?= "Walter, attack: 50, health: 50"
         , testCase "Test for getHealth" $
-            getHealth walter @?= 50
+            getHealth optimus @?= 20
         , testCase "Test for getAttack" $
-            getAttack walter @?= 50
+            getAttack optimus @?= 10
         , testCase "Test for setName" $
             setName "Wolter" walter @?= robot "Wolter" 50 50
         , testCase "Test for setHealth" $
