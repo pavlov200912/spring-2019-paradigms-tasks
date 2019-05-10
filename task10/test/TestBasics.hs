@@ -6,6 +6,9 @@ import Basics
 main :: IO ()
 main = defaultMain testsBasics
 
+--infEqual :: [a]->[a]->Bool
+infEqual a b = (take' 5 a) == (take' 5 b)
+
 testsBasics :: TestTree
 testsBasics = testGroup "Unit tests for Basics tasks"
     [testCase "head' works on non-empty list" $
@@ -24,7 +27,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         tail' [1,2,3,4,5,6] @?= [2,3,4,5,6]
 
     , testCase "tail' works on infinite list too" $
-        head' (tail' [0..]) @?= 1
+        infEqual (tail' [0..]) [1,2,3,4,5] @?= True
 
     , testCase "take' takes 1 element from 3-element list" $
         take' 1 [1,2,3] @?= [1]
@@ -42,7 +45,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         drop' 2 [1,2,3,4,5] @?= [3,4,5]
 
     , testCase "drop' drops 3 element from infinite list" $
-        take' 2 (drop' 3 [1..]) @?= [4,5]
+        infEqual (drop' 3 [1..]) [4,5,6,7,8,9] @?= True
 
     , testCase "filter' selects only even numbers from 0 to 10" $
         filter' even [0..10] @?= [0,2..10]
@@ -51,7 +54,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         filter' (>4) [0..10] @?= [5..10]
 
     , testCase "filter' selects only (>4) from infinite list" $
-            head' (filter' (>4) [0..]) @?= 5
+            infEqual (filter' (>4) [0..]) [5, 6, 7, 8, 9, 10] @?= True
 
     , testCase "foldl'' can be used for finding sum of elements" $
         foldl'' (+) 0 [1,2,3] @?= 6
@@ -63,7 +66,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         concat' [1,2,3] [4,5,6] @?= [1..6]
 
     , testCase "concat' works on infinite lists as expected" $
-        head' (concat' [0] [1..]) @?= 0
+        infEqual (concat' [0] [1..]) [0,1,2,3,4] @?= True
 
     , testCase "concat' works with empty lists as expected" $
         concat' [] [1,2,3,4,5,6] @?= [1..6]
