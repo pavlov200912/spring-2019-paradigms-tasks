@@ -3,6 +3,7 @@
 -}
 module Map where
 
+import Data.Maybe (isJust, isNothing)
 {-|
   Поведение всех определённых здесь функций должно быть аналогично
   поведению функций из модуля "Data.Map.Strict".
@@ -64,10 +65,10 @@ class Map t where
     lookup :: Ord k => k -> t k a -> Maybe a
 
     member :: Ord k => k -> t k a -> Bool
-    member = undefined {- lookup -}
+    member k = isJust . Map.lookup k
 
     notMember :: Ord k => k -> t k a -> Bool
-    notMember = undefined {- member -}
+    notMember k = isNothing . Map.lookup k
 
     null :: t k a -> Bool
     null = undefined {- size -}

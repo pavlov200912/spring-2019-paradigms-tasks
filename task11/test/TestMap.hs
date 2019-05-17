@@ -31,6 +31,34 @@ mapTests name (_ :: Proxy m) =
             testCase "toAscList . fromList sorts list" $
                 let tr = fromList [(2, "a"), (1, "b"), (3, "c"), (1, "x")] :: m Int String in
                 toAscList tr @?= [(1, "x"), (2, "a"), (3, "c")]
+        ],
+
+        testGroup "member test" [
+            testCase "member returns true, if key in map" $
+            let map = singleton 1 "one" :: m Int String in
+            Map.member 1 map @?= True,
+
+            testCase "member returns false, if key not map" $
+            let map = singleton 1 "one" :: m Int String in
+            Map.member 2 map @?= False,
+
+            testCase "member returns false, on empty map" $
+            let map = empty :: m Int String in
+            Map.member 1 map @?= False
+        ],
+
+        testGroup "notMember test" [
+            testCase "notMember returns false, if key in map" $
+            let map = singleton 1 "one" :: m Int String in
+            Map.notMember 1 map @?= False,
+
+            testCase "notMember returns true, if key not map" $
+            let map = singleton 1 "one" :: m Int String in
+            Map.notMember 2 map @?= True,
+
+            testCase "notMember returns true, on empty map" $
+            let map = empty :: m Int String in
+            Map.notMember 1 map @?= True
         ]
     ]
 
