@@ -33,7 +33,7 @@ mapTests name (_ :: Proxy m) =
                 toAscList tr @?= [(1, "x"), (2, "a"), (3, "c")]
         ],
 
-        testGroup "member test" [
+        testGroup "member tests" [
             testCase "member returns true, if key in map" $
             let map = singleton 1 "one" :: m Int String in
             Map.member 1 map @?= True,
@@ -47,7 +47,7 @@ mapTests name (_ :: Proxy m) =
             Map.member 1 map @?= False
         ],
 
-        testGroup "notMember test" [
+        testGroup "notMember tests" [
             testCase "notMember returns false, if key in map" $
             let map = singleton 1 "one" :: m Int String in
             Map.notMember 1 map @?= False,
@@ -59,6 +59,16 @@ mapTests name (_ :: Proxy m) =
             testCase "notMember returns true, on empty map" $
             let map = empty :: m Int String in
             Map.notMember 1 map @?= True
+        ],
+
+        testGroup "null tests" [
+            testCase "null returns false on nonempty map" $
+            let map = singleton 1 "one" :: m Int String in
+            Map.null map @?= False,
+
+            testCase "null returns true on empty map" $
+            let map = empty :: m Int String in
+            Map.null map @?= True
         ]
     ]
 

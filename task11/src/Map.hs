@@ -71,6 +71,6 @@ class Map t where
     notMember k = isNothing . Map.lookup k
 
     null :: t k a -> Bool
-    null = undefined {- size -}
+    null m = size m == 0
 
     size :: t k a -> Int
