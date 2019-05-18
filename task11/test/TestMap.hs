@@ -79,6 +79,20 @@ mapTests name (_ :: Proxy m) =
                 Map.lookup 5 map @?= Just "xxx"
         ],
 
+        testGroup "delete tests" [
+            testCase "delete with member key" $
+                let map = delete 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.notMember 5 map @?= True,
+
+            testCase "delete notMember" $
+                let map = delete 7 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.size map @?= 2,
+
+            testCase "delete on empty" $
+                let map = delete 5 (empty :: m Int String) in
+                Map.null map @?= True
+        ],
+
         testGroup "adjust tests" [
             testCase "adjust update value" $
                 let map = adjust ("new " ++) 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
