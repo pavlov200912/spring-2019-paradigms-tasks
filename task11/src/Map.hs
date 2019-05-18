@@ -32,15 +32,16 @@ class Map t where
     singleton :: k -> a -> t k a
 
     fromList :: Ord k => [(k, a)] -> t k a
-    fromList = undefined {- insert -}
-
+    fromList = foldl (\m (k, a) -> insert k a m) empty
     toAscList :: t k a -> [(k, a)]
 
     insert :: Ord k => k -> a -> t k a -> t k a
-    insert = undefined {- insertWith -}
+    insert = insertWith const
 
     insertWith :: Ord k => (a -> a -> a) -> k -> a -> t k a -> t k a
-    insertWith = undefined {- alter -}
+    insertWith f k a = alter (\x -> case x of
+                              Nothing -> Just a
+                              Just y -> Just (f a y)) k
 
     insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> t k a -> t k a
     insertWithKey = undefined {- insertWith -}
@@ -55,7 +56,9 @@ class Map t where
     adjustWithKey = undefined {- adjust -}
 
     update :: Ord k => (a -> Maybe a) -> k -> t k a -> t k a
-    update = undefined {- alter -}
+    update f = alter (\x -> case x of
+                      Nothing -> Nothing
+                      Just a -> f a)
 
     updateWithKey :: Ord k => (k -> a -> Maybe a) -> k -> t k a -> t k a
     updateWithKey = undefined {- update -}
