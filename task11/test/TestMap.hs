@@ -74,10 +74,40 @@ mapTests name (_ :: Proxy m) =
                 let map = insertWithKey f 7 "xxx" (fromList [(5,"a"), (3,"b")] :: m Int String) in
                 Map.lookup 7 map @?= Just "xxx",
 
-            testCase "insertWithKey of empty" $
+            testCase "insertWithKey on empty" $
                 let map = insertWithKey f 5 "xxx" (empty :: m Int String) in
                 Map.lookup 5 map @?= Just "xxx"
         ],
+
+        testGroup "adjust tests" [
+            testCase "adjust update value" $
+                let map = adjust ("new " ++) 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 5 map @?= Just "new a",
+
+            testCase "adjust do nothing if key notMember" $
+                let map = adjust ("new" ++ ) 7 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 7 map @?= Nothing,
+
+            testCase "adjust on empty" $
+                let map = adjust ("new" ++) 5 (empty :: m Int String) in
+                Map.null map @?= True
+        ],
+
+        let f key x = (show key) ++ ":new " ++ x in
+        testGroup "adjustWithKey tests" [
+            testCase "adjustWithKey update value" $
+                let map = adjustWithKey f 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 5 map @?= Just "5:new a",
+
+            testCase "adjustWithKey do nothing if key notMember" $
+                let map = adjustWithKey f 7 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 7 map @?= Nothing,
+
+            testCase "adjustWithKey on empty" $
+                let map = adjustWithKey f 5 (empty :: m Int String) in
+                Map.null map @?= True
+        ],
+
 
         let f x = if x == "a" then Just "new a" else Nothing in
         testGroup "update tests" [
