@@ -52,10 +52,10 @@ instance Map NaiveTree where
     toAscList (Node k a l r) = toAscList l ++ [(k, a)] ++ toAscList r
 
     alter f key Nil                        = maybe empty (singleton key) (f Nothing)
-    alter f key (Node k a l r) | key < k   = flip merge r $ alter f key l
-                               | key > k   = merge l $ alter f key r
-                               | otherwise = let v = maybe Nil (singleton k) $ f (Just a) in
-                                             merge l $ merge v r
+    alter f key (Node k a l r) | key < k   = Node k a (alter f key l) r
+                               | key > k   = Node k a l (alter f key r)
+                               | otherwise =
+                               merge l $ merge (maybe Nil (singleton k) $ f (Just a)) r
 
     lookup _ Nil                          = Nothing
     lookup key (Node k a l r) | key < k   = Map.lookup key l

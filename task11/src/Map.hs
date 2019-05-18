@@ -1,9 +1,9 @@
+{-# LANGUAGE LambdaCase #-}
 {-|
   Определение класса типов 'Map'.
 -}
 module Map where
-
-import Data.Maybe (isJust, isNothing)
+import Data.Maybe
 {-|
   Поведение всех определённых здесь функций должно быть аналогично
   поведению функций из модуля "Data.Map.Strict".
@@ -40,9 +40,7 @@ class Map t where
     insert = insertWith const
 
     insertWith :: Ord k => (a -> a -> a) -> k -> a -> t k a -> t k a
-    insertWith f k a = alter (\x -> case x of
-                              Nothing -> Just a
-                              Just y -> Just (f a y)) k
+    insertWith f k a = alter (Just . maybe a (f a)) k
 
     insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> t k a -> t k a
     insertWithKey f k = insertWith (f k) k
@@ -51,7 +49,7 @@ class Map t where
     delete = alter (const Nothing)
 
     adjust :: Ord k => (a -> a) -> k -> t k a -> t k a
-    adjust f = alter (\x -> case x of
+    adjust f = alter (\case
                       Nothing -> Nothing
                       Just a -> Just $ f a)
 
@@ -59,9 +57,7 @@ class Map t where
     adjustWithKey f k = adjust (f k) k
 
     update :: Ord k => (a -> Maybe a) -> k -> t k a -> t k a
-    update f = alter (\x -> case x of
-                      Nothing -> Nothing
-                      Just a -> f a)
+    update = alter . maybe Nothing
 
     updateWithKey :: Ord k => (k -> a -> Maybe a) -> k -> t k a -> t k a
     updateWithKey f k = update (f k) k
