@@ -64,20 +64,32 @@ mapTests name (_ :: Proxy m) =
                 Map.lookup 5 map @?= Just "xxx"
         ],
 
+        let f key new_value old_value = (show key) ++ ":" ++ new_value ++ "|" ++ old_value in
+        testGroup "insertWithKey tests" [
+            testCase "insertWithKey update value" $
+                let map = insertWithKey f 5 "xxx" (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 5 map @?= Just "5:xxx|a",
 
+            testCase "insertWithKey add value" $
+                let map = insertWithKey f 7 "xxx" (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 7 map @?= Just "xxx",
+
+            testCase "insertWithKey of empty" $
+                let map = insertWithKey f 5 "xxx" (empty :: m Int String) in
+                Map.lookup 5 map @?= Just "xxx"
+        ],
+
+        let f x = if x == "a" then Just "new a" else Nothing in
         testGroup "update tests" [
             testCase "update change value by key, if f return Just" $
-                let f x = if x == "a" then Just "new a" else Nothing in
                 let map = update f 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
                 Map.lookup 5 map @?= Just "new a",
  
             testCase "update changes nothing, if key notMember" $
-                let f x = if x == "a" then Just "new a" else Nothing in
                 let map = update f 7 (fromList [(5,"a"), (3,"b")] :: m Int String) in
                 size map @?= 2,
  
             testCase "update remove value, if f returns Nothing" $
-                let f x = if x == "a" then Just "new a" else Nothing in
                 let map = update f 3 (fromList [(5,"a"), (3,"b")]) :: m Int String in
                 member 3 map @?= False
         ],

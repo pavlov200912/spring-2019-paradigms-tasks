@@ -33,6 +33,7 @@ class Map t where
 
     fromList :: Ord k => [(k, a)] -> t k a
     fromList = foldl (\m (k, a) -> insert k a m) empty
+
     toAscList :: t k a -> [(k, a)]
 
     insert :: Ord k => k -> a -> t k a -> t k a
@@ -44,7 +45,7 @@ class Map t where
                               Just y -> Just (f a y)) k
 
     insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> t k a -> t k a
-    insertWithKey = undefined {- insertWith -}
+    insertWithKey f k = insertWith (f k) k
 
     delete :: Ord k => k -> t k a -> t k a
     delete = undefined {- alter -}
