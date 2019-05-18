@@ -93,6 +93,21 @@ mapTests name (_ :: Proxy m) =
                 let map = update f 3 (fromList [(5,"a"), (3,"b")]) :: m Int String in
                 member 3 map @?= False
         ],
+
+        let f k x = if x == "a" then Just ((show k) ++ ":new a") else Nothing in
+        testGroup "updateWithKey tests" [
+            testCase "updateWithKey update value" $
+                let map = updateWithKey f 5 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                Map.lookup 5 map @?= Just "5:new a",
+
+            testCase "updateWithKey do nothing, if key notMember" $
+                let map = updateWithKey f 7 (fromList [(5,"a"), (3,"b")] :: m Int String) in
+                size map @?= 2,
+
+            testCase "update remove value, if f returns Nothing" $
+                let map = updateWithKey f 3 (fromList [(5,"a"), (3,"b")]) :: m Int String in
+                member 3 map @?= False
+        ],
  
         testGroup "member tests" [
             testCase "member returns true, if key in map" $
