@@ -51,7 +51,7 @@ instance Map NaiveTree where
     toAscList Nil            = []
     toAscList (Node k a l r) = toAscList l ++ [(k, a)] ++ toAscList r
 
-    alter f key Nil                        = maybe empty (singleton key) (f Nothing)
+    alter f key Nil                        = maybe Nil (singleton key) (f Nothing)
     alter f key (Node k a l r) | key < k   = Node k a (alter f key l) r
                                | key > k   = Node k a l (alter f key r)
                                | otherwise =
