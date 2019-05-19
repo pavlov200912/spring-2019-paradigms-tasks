@@ -27,7 +27,7 @@ data NaiveTree k a =
   что все ключи из @l@ строго меньше ключей из @r@.
 -}
 merge :: NaiveTree k a -> NaiveTree k a -> NaiveTree k a
-merge Nil r              = r
+merge Nil              r = r
 merge (Node k a ll lr) r = Node k a ll $ merge lr r
 
 {-|
@@ -48,16 +48,16 @@ instance Map NaiveTree where
 
     singleton k a = Node k a Nil Nil
 
-    toAscList Nil            = []
+    toAscList  Nil           = []
     toAscList (Node k a l r) = toAscList l ++ [(k, a)] ++ toAscList r
 
-    alter f key Nil                        = maybe Nil (singleton key) (f Nothing)
+    alter f key  Nil                       = maybe empty (singleton key) (f Nothing)
     alter f key (Node k a l r) | key < k   = Node k a (alter f key l) r
                                | key > k   = Node k a l (alter f key r)
-                               | otherwise =
-                               merge l $ merge (maybe Nil (singleton k) $ f (Just a)) r
+                               | otherwise = let v = (maybe empty (singleton k) $ f (Just a)) in
+                                             merge l $ merge v r
 
-    lookup _ Nil                          = Nothing
+    lookup _    Nil                       = Nothing
     lookup key (Node k a l r) | key < k   = Map.lookup key l
                               | key > k   = Map.lookup key r
                               | otherwise = Just a

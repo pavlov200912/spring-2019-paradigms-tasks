@@ -49,9 +49,7 @@ class Map t where
     delete = alter (const Nothing)
 
     adjust :: Ord k => (a -> a) -> k -> t k a -> t k a
-    adjust f = alter (\case
-                      Nothing -> Nothing
-                      Just a -> Just $ f a)
+    adjust = alter . fmap
 
     adjustWithKey :: Ord k => (k -> a -> a) -> k -> t k a -> t k a
     adjustWithKey f k = adjust (f k) k
@@ -70,7 +68,7 @@ class Map t where
     member k = isJust . Map.lookup k
 
     notMember :: Ord k => k -> t k a -> Bool
-    notMember k = isNothing . Map.lookup k
+    notMember k m = not (member k m)
 
     null :: t k a -> Bool
     null m = size m == 0
